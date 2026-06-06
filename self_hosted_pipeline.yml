@@ -1,0 +1,52 @@
+trigger:
+  - main
+
+pool:
+  name: 'SelfHostedPool'
+
+variables:
+  projectPath: '$(Build.SourcesDirectory)'
+
+stages:
+  - stage: Build
+    displayName: 'Build & Test'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build SkillPulse'
+        steps:
+          - checkout: self
+          - script: |
+              cd $(projectPath)
+              docker compose build
+            displayName: 'Build Docker Images'
+
+          - script: |
+              cd $(projectPath)/backend
+              go test ./... -v
+            displayName: 'Run Tests'
+
+  - stage: Deploy
+    displayName: 'Deploy to VM'
+    dependsOn: Build
+    jobs:
+      - deployment: DeployJob
+        displayName: 'Deploy SkillPulse'
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                
+                - script: |
+                    cd $(projectPath)
+                    cp .env.example .env
+                    docker compose down
+                    docker compose up -d --build
+                  displayName: 'Deploy'
+
+                - script: |
+                    sleep 15
+                    curl -f http://localhost:/health || exit 1
+                    echo "Health check passed!"
+                  displayName: 'Health Check'
