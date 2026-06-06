@@ -1,0 +1,46 @@
+# Go
+*.exe
+*.dll
+*.so
+*.dylib
+/backend/skillpulse
+/backend/tmp/
+*.test
+*.out
+go.work
+go.work.sum
+vendor/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+
+# Docker
+docker-compose.override.yml
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE / Editor
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# MySQL data
+mysql-data/
+data/mysql/
